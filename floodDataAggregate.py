@@ -49,7 +49,7 @@ if __name__ == "__main__":
         if(os.path.isdir(itempath)
                and os.path.exists(os.path.join(itempath, EXCELNAME))):
             sheet = xlrd.open_workbook(os.path.join(itempath, EXCELNAME)).sheet_by_index(0)
-            for i in (BEGINCOL, ENDCOL + 1):
+            for i in range(BEGINCOL, ENDCOL + 1):
                 if( not d.get(sheet.cell(10, i).value, False)):
                     d[sheet.cell(10, i).value] = sheet.col_values(i)
     l = sorted(d.items(), key=lambda x:x[0])
