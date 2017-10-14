@@ -1,10 +1,5 @@
 # encoding: utf-8
 
-"""
-@author: 'liuyuefeng'
-@file: floodDataAggregate.py
-@time: 2017/9/10 21:37
-"""
 import os
 import xlrd
 import xlwt
@@ -18,7 +13,7 @@ BEGINCOL = 7
 #读取结束列
 ENDCOL = 12
 #日期所在行
-DATEROW = 10
+DATEROW = 50
 #写入开始列
 COL_WT = 2
 #写入开始行
@@ -44,13 +39,11 @@ if __name__ == "__main__":
         d = {}
         #传入参数是文件路径
         oldpath = sys.argv[1]
-        # oldpath = 'C:/Users/liuyuefeng/Desktop/201501/201501'
         path = oldpath.replace("/", "\\")
-        # path = 'C:\\Users\\liuyuefeng\\Desktop\\201501\\201501'
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                             datefmt='%a, %d %b %Y %H:%M:%S',
-                            filename=os.path.join(path, 'flood-info.log'),
+                            filename=os.path.join(path, 'discharges-info.log'),
                             filemode='w')
         for item in os.listdir(path):
             itempath = os.path.join(path, item)
@@ -74,7 +67,7 @@ if __name__ == "__main__":
             rownum = ROW_WT + int(item[0] - mindate)
             sheetwt.write(rownum, COL_WT, xlrd.xldate.xldate_as_datetime(item[0], 0), style)
             writeline(sheetwt, rownum, COL_WT + 1, item[1][DATEROW + 1:])
-        wbk.save(os.path.join(path, "flood.xls"))
+        wbk.save(os.path.join(path, "discharges.xls"))
     except Exception as e:
         logging.error(e.with_traceback())
         print(e.with_traceback())
