@@ -1,16 +1,10 @@
 # encoding: utf-8
 
-"""
-@author: 'liuyuefeng'
-@file: dataAggregate.py
-@time: 2017/10/22 18:16
-"""
-
 import os
 import xlrd
 import xlwt
 import sys
-import logging
+import logging, logging.handlers
 #固定的excel文件名
 EXCELNAME = "flood forecast.xls"
 #excel日期格式
@@ -41,11 +35,11 @@ def excelProcess(beginCol, endCol, daterRow, colWt, rowWt, path, resultFile, log
     :return:
     '''
     d = {}
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                        datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(path, logFile),
-                        filemode='w')
+    log = logging.getLogger(logFile)
+    loghandlers = logging.handlers.RotatingFileHandler(os.path.join(path, logFile), 'w', 0, 1)
+    loghandlers.setFormatter(logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s'))
+    log.addHandler(loghandlers)
+    log.setLevel(logging.DEBUG)
     for item in os.listdir(path):
         itempath = os.path.join(path, item)
         if (os.path.isdir(itempath)
@@ -53,10 +47,10 @@ def excelProcess(beginCol, endCol, daterRow, colWt, rowWt, path, resultFile, log
             try:
                 sheet = xlrd.open_workbook(os.path.join(itempath, EXCELNAME)).sheet_by_index(0)
             except Exception as e:
-                logging.error("failed to process " + os.path.join(itempath, EXCELNAME))
+                log.error("failed to process " + os.path.join(itempath, EXCELNAME))
                 print("failed to process " + os.path.join(itempath, EXCELNAME))
                 continue
-            logging.info("processed " + os.path.join(itempath, EXCELNAME))
+            log.info("processed " + os.path.join(itempath, EXCELNAME))
             for i in range(beginCol, endCol + 1):
                 if (not d.get(sheet.cell(daterRow, i).value, False)):
                     d[sheet.cell(daterRow, i).value] = sheet.col_values(i)
@@ -76,14 +70,14 @@ if __name__ == "__main__":
         excelProcess(7, 12, 50, 2, 6, path, 'discharges.xls', 'discharges.log')
         print("discharges aggregate  success!")
     except Exception as e:
-        print(e.with_traceback())
+        print(e)
     try:
         excelProcess(7, 12, 10, 2, 6, path, 'flood.xls', 'flood.log')
-        print("discharges aggregate  success!")
+        print("flood aggregate  success!")
     except Exception as e:
-        print(e.with_traceback())
+        print(e)
     try:
         excelProcess(5, 5, 50, 2, 6, path, 'rainfall.xls', 'rainfall.log')
-        print("discharges aggregate  success!")
+        print("rainfall aggregate  success!")
     except Exception as e:
-        print(e.with_traceback())
+        print(e)
